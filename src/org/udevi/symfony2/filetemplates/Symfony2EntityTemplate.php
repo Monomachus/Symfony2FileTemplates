@@ -4,7 +4,11 @@ namespace ${namespaceDir};
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="Udevi\ChurchBundle\Repository\AddressRepository")
+ <#if repoDeclared>
+ * @ORM\Entity(repositoryClass="${namespaceForRepository}\${name}Repository")
+<#else>
+ * @ORM\Entity
+</#if>
  * @ORM\Table(name="${optionalTableName}")
  */
 class ${name} {

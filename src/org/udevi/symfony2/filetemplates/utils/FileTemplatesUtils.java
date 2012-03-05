@@ -7,6 +7,7 @@ package org.udevi.symfony2.filetemplates.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -14,7 +15,9 @@ import org.apache.commons.lang.StringUtils;
  * @author tpoperecinii
  */
 public class FileTemplatesUtils {
-    
+    public static final String BUNDLE = "Bundle";
+    public static final String REPOSITORY = "Repository";
+
     public static final String SRC = "src";
     public static final String WINDOWS_SEPARATOR = "/";
     public static final String UNIX_SEPARATOR = "\\";
@@ -51,9 +54,8 @@ public class FileTemplatesUtils {
     /**
      * Build a relative path to the given base path. Example:
      *
-     * path = "/var/data/stuff/xyz.dat";
-     * base = "/var/data";
-     * relative == "stuff/xyz.dat";
+     * path = "/var/data/stuff/xyz.dat"; base = "/var/data"; relative ==
+     * "stuff/xyz.dat";
      *
      * @param base - the path used as the base
      * @param path - the path to compute relative to the base path
@@ -69,17 +71,31 @@ public class FileTemplatesUtils {
 
     public static String getNamespaceForPhp(String absolutePath) throws IOException {
         String namespacePath = absolutePath;
-        
+
         int closestSourceIndex = absolutePath.lastIndexOf(SRC);
-        
-        if (closestSourceIndex > -1){
+
+        if (closestSourceIndex > -1) {
             String uriSourcePackage = absolutePath.substring(0, closestSourceIndex + SRC.length());
-            
+
             namespacePath = findRelativePath(absolutePath, uriSourcePackage);
         }
-        
+
         namespacePath = namespacePath.replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR);
-        
+
         return namespacePath;
+    }
+
+   public static String getNamespaceForRepository(String namespace) {
+        String namespaceRepository = namespace;
+       
+        int closestBundleIndex = namespace.lastIndexOf(BUNDLE);
+
+        if (closestBundleIndex > -1) {
+            String uriBundle = namespace.substring(0, closestBundleIndex + BUNDLE.length());
+
+            namespaceRepository = FilenameUtils.concat(uriBundle, REPOSITORY);
+        }
+
+        return namespaceRepository;
     }
 }

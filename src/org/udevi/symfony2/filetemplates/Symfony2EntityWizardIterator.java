@@ -85,9 +85,15 @@ public final class Symfony2EntityWizardIterator implements WizardDescriptor.Inst
             optionalTableName = FileTemplatesUtils.tableize(targetName);
         }
         
+        String namespace = FileTemplatesUtils.getNamespaceForPhp(dir.getURL().toString());
+        
         args.put("repoDeclared", isRepositoryDeclared);
         args.put("optionalTableName", optionalTableName);
-        args.put("namespaceDir", FileTemplatesUtils.getNamespaceForPhp(dir.getURL().toString()));
+        args.put("namespaceDir", namespace);
+        
+        if (isRepositoryDeclared){
+            args.put("namespaceForRepository", FileTemplatesUtils.getNamespaceForRepository(namespace));
+        }
         
         //Define the template from the above,
         //passing the package, the file name, and the map of strings to the template:
