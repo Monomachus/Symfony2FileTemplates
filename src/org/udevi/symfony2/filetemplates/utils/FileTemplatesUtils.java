@@ -6,9 +6,10 @@ package org.udevi.symfony2.filetemplates.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -34,12 +35,12 @@ public class FileTemplatesUtils {
     }
 
     public static String tableize(String targetName) {
-        String[] arrayOfWords = StringUtils.splitByCharacterTypeCamelCase(targetName);
+        List<String> arrayOfWords = splitByCharacterTypeCamelCase(targetName);
 
         StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < arrayOfWords.length; i++) {
-            String word = arrayOfWords[i];
+        for (int i = 0; i < arrayOfWords.size(); i++) {
+            String word = arrayOfWords.get(i);
 
             if (i > 0) {
                 builder.append("_");
@@ -97,5 +98,27 @@ public class FileTemplatesUtils {
         }
 
         return namespaceRepository;
+    }
+
+    private static List<String> splitByCharacterTypeCamelCase(String targetName) {
+        List<String> wordsList = new ArrayList<String>();
+        
+        StringBuilder word = new StringBuilder();
+        
+        for (int i = 0; i < targetName.length(); i++){
+            char c = targetName.charAt(i);
+            
+            if (Character.isUpperCase(c) && i > 0){
+                wordsList.add(word.toString());
+                word.delete(0, word.length());
+                word.append(Character.toLowerCase(c));
+            } else {
+                word.append(Character.toLowerCase(c));
+            }
+        }
+        
+        wordsList.add(word.toString());
+        
+        return wordsList;
     }
 }
