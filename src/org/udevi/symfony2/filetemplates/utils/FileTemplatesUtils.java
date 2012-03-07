@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -94,7 +93,7 @@ public class FileTemplatesUtils {
         if (closestBundleIndex > -1) {
             String uriBundle = namespace.substring(0, closestBundleIndex + BUNDLE.length());
 
-            namespaceRepository = FilenameUtils.concat(uriBundle, REPOSITORY);
+            namespaceRepository = PathUtils.concat(uriBundle, REPOSITORY);
         }
 
         return namespaceRepository;
