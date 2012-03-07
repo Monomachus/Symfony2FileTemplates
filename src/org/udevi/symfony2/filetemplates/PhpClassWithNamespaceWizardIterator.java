@@ -32,36 +32,16 @@ public final class PhpClassWithNamespaceWizardIterator implements WizardDescript
     private int index;
     private WizardDescriptor wizard;
     private List<WizardDescriptor.Panel<WizardDescriptor>> panels;
-    private Panel<WizardDescriptor> packageChooserPanel;
-    
 
     private List<WizardDescriptor.Panel<WizardDescriptor>> getPanels() {
         Project project = Templates.getProject(wizard);
         Sources sources = ProjectUtils.getSources(project);
         SourceGroup[] groups = sources.getSourceGroups("PHPSOURCE");
-        packageChooserPanel = Templates.createSimpleTargetChooser(project, groups, new PhpClassWithNamespaceWizardPanel1());
-        if (panels == null) {
-            panels = new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
-            panels.add(packageChooserPanel);
-            String[] steps = createSteps();
-            for (int i = 0; i < panels.size(); i++) {
-                Component c = panels.get(i).getComponent();
-                if (steps[i] == null) {
-                    // Default step name to component name of panel. Mainly
-                    // useful for getting the name of the target chooser to
-                    // appear in the list of steps.
-                    steps[i] = c.getName();
-                }
-                if (c instanceof JComponent) { // assume Swing components
-                    JComponent jc = (JComponent) c;
-                    jc.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
-                    jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);
-                    jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, true);
-                    jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, true);
-                    jc.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, true);
-                }
-            }
-        }
+        
+        WizardDescriptor.Panel<WizardDescriptor> simpleTargetChooserPanel = Templates.buildSimpleTargetChooser(project, groups).freeFileExtension().create();
+
+        panels = new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
+        panels.add(simpleTargetChooserPanel);
         return panels;
     }
 
@@ -83,6 +63,23 @@ public final class PhpClassWithNamespaceWizardIterator implements WizardDescript
     @Override
     public void initialize(WizardDescriptor wizard) {
         this.wizard = wizard;
+        panels = getPanels();
+
+        // Make sure list of steps is accurate.
+        String[] beforeSteps = (String[]) wizard.getProperty(WizardDescriptor.PROP_CONTENT_DATA);
+        int beforeStepLength = beforeSteps.length - 1;
+        String[] steps = createSteps(beforeSteps);
+        
+        int panelSize = panels.size();
+        
+        for (int i = 0; i < panelSize; i++) {
+            Component c = panels.get(i).getComponent();
+            if (c instanceof JComponent) { // assume Swing components
+                JComponent jc = (JComponent) c;
+                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, new Integer(i + beforeStepLength - 1)); // NOI18N
+                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps); // NOI18N
+            }
+        }
     }
 
     @Override
@@ -92,17 +89,17 @@ public final class PhpClassWithNamespaceWizardIterator implements WizardDescript
 
     @Override
     public WizardDescriptor.Panel<WizardDescriptor> current() {
-        return getPanels().get(index);
+        return panels.get(index);
     }
 
     @Override
     public String name() {
-        return index + 1 + ". from " + getPanels().size();
+        return index + 1 + ". from " + panels.size();
     }
 
     @Override
     public boolean hasNext() {
-        return index < getPanels().size() - 1;
+        return index < panels.size() - 1;
     }
 
     @Override
@@ -143,15 +140,14 @@ public final class PhpClassWithNamespaceWizardIterator implements WizardDescript
     // there before this wizard was instantiated. It should be better handled
     // by NetBeans Wizard API itself rather than needed to be implemented by a
     // client code.
-    private String[] createSteps() {
-        String[] beforeSteps = (String[]) wizard.getProperty("WizardPanel_contentData");
-        assert beforeSteps != null : "This wizard may only be used embedded in the template wizard";
-        String[] res = new String[(beforeSteps.length - 1) + panels.size()];
+   private String[] createSteps(String[] beforeSteps) {
+        int beforeStepLength = beforeSteps.length - 1;
+        String[] res = new String[beforeStepLength + panels.size()];
         for (int i = 0; i < res.length; i++) {
-            if (i < (beforeSteps.length - 1)) {
+            if (i < (beforeStepLength)) {
                 res[i] = beforeSteps[i];
             } else {
-                res[i] = panels.get(i - beforeSteps.length + 1).getComponent().getName();
+                res[i] = panels.get(i - beforeStepLength).getComponent().getName();
             }
         }
         return res;
