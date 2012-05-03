@@ -7,7 +7,7 @@ namespace ${namespaceDir};
  *
  * @author ${user}
  */
-class ${name} {
+class ${name}
+{
     //put your code here
 }
-?>
