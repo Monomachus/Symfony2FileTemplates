@@ -10,12 +10,10 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author ${user}
  */
-class ${name} extends Controller {
-    
+class ${name} extends Controller
+{
     public function indexAction()
     {
         return new Response('Hello world!');
     }
 }
-
-?>
