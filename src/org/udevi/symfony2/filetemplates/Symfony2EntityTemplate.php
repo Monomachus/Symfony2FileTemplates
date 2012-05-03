@@ -11,8 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 </#if>
  * @ORM\Table(name="${optionalTableName}")
  */
-class ${name} {
-    
+class ${name}
+{
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -22,4 +22,3 @@ class ${name} {
     
     //put your code here
 }
-?>
